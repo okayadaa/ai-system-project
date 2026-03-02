@@ -32,35 +32,31 @@ def parse_guess(raw: str):
 def check_guess(guess, secret):
     if guess == secret:
         return "Win", "🎉 Correct!"
-
+## Inverted logic condition: FIXED
     try:
         if guess > secret:
-            return "Too High", "📈 Go HIGHER!"
+            return "Too High", "📈 Go LOWER!"
         else:
-            return "Too Low", "📉 Go LOWER!"
+            return "Too Low", "📉 Go HIGHER!"
     except TypeError:
         g = str(guess)
-        if g == secret:
+        s = str(secret)
+        if g == s:
             return "Win", "🎉 Correct!"
-        if g > secret:
-            return "Too High", "📈 Go HIGHER!"
-        return "Too Low", "📉 Go LOWER!"
+        if g > s:
+            return "Too High", "📈 Go LOWER!"
+        return "Too Low", "📉 Go HIGHER!"
 
-
+## Scoring outcomes is inconsistent: FIXED
 def update_score(current_score: int, outcome: str, attempt_number: int):
     if outcome == "Win":
-        points = 100 - 10 * (attempt_number + 1)
+        points = 100 - 10 * (attempt_number - 1)
         if points < 10:
             points = 10
         return current_score + points
 
-    if outcome == "Too High":
-        if attempt_number % 2 == 0:
-            return current_score + 5
-        return current_score - 5
-
-    if outcome == "Too Low":
-        return current_score - 5
+    if outcome == "Too High" or outcome == "Too Low":
+       return current_score + 5
 
     return current_score
 
@@ -85,12 +81,13 @@ attempt_limit_map = {
 attempt_limit = attempt_limit_map[difficulty]
 
 low, high = get_range_for_difficulty(difficulty)
-
+##Incorrect range displayed: FIXED
 st.sidebar.caption(f"Range: {low} to {high}")
 st.sidebar.caption(f"Attempts allowed: {attempt_limit}")
 
-if "secret" not in st.session_state:
+if "secret" not in st.session_state or st.session_state.get("difficulty") != difficulty:
     st.session_state.secret = random.randint(low, high)
+    st.session_state.difficulty = difficulty
 
 if "attempts" not in st.session_state:
     st.session_state.attempts = 1
@@ -107,7 +104,7 @@ if "history" not in st.session_state:
 st.subheader("Make a guess")
 
 st.info(
-    f"Guess a number between 1 and 100. "
+    f"Guess a number between {low} and {high}. "
     f"Attempts left: {attempt_limit - st.session_state.attempts}"
 )
 
@@ -132,8 +129,10 @@ with col3:
     show_hint = st.checkbox("Show hint", value=True)
 
 if new_game:
-    st.session_state.attempts = 0
-    st.session_state.secret = random.randint(1, 100)
+    st.session_state.attempts = 1
+    st.session_state.secret = random.randint(low, high)
+    st.session_state.status = "playing"
+    st.session_state.history = []
     st.success("New game started.")
     st.rerun()
 
