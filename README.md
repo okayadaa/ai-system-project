@@ -1,47 +1,29 @@
-# 🎮 Game Glitch Investigator: The Impossible Guesser
+# 🎮 Game Glitch: The Impossible Guesser
 
-## 🚨 The Situation
-
-You asked an AI to build a simple "Number Guessing Game" using Streamlit.
-It wrote the code, ran away, and now the game is unplayable. 
-
-- You can't win.
-- The hints lie to you.
-- The secret number seems to have commitment issues.
+## Updated Version:
+-> Guess parsing was tightedn to reject decimals specifically<br>
+-> Guess comparisons logic was corrected and made safer<br>
+-> Check_guess is reliably returns win, too high, and too low including generating messages<br> 
+-> Session state reset and initialization behavior has improved (preventing a stale state)<br>
+-> Developer debug panel was gated behind a password<br>
+-> Hint system was upgraded with distance based feedback<br>
+-> Second mini game was added<br>
 
 ## 🛠️ Setup
 
 1. Install dependencies: `pip install -r requirements.txt`
 2. Run the broken app: `python -m streamlit run app.py`
 
-## 🕵️‍♂️ Your Mission
+## Evaluation:
+Based on the automated test, 17 tests passed and 1 test failed. The update_score_accumulated failed due to an AssertionError. The calculation was a bit off since ideally the update_score function relies on 100 - 10 * (attempt_number - 1). For example, if user is one attempt number 3 then the result would be 80. And I noticed in the test asserts, there's a value 70. Which that value is only on attempt number 4. However, with the adjustment I would have to change the value to 80 rather than 70. In addition, the 17 tests that did passed, confirming on number comparisons, input parsing, score updates, and difficulty ranges are functioning as expected.   
 
-1. **Play the game.** Open the "Developer Debug Info" tab in the app to see the secret number. Try to win.
-2. **Find the State Bug.** Why does the secret number change every time you click "Submit"? Ask ChatGPT: *"How do I keep a variable from resetting in Streamlit when I click a button?"*
-3. **Fix the Logic.** The hints ("Higher/Lower") are wrong. Fix them.
-4. **Refactor & Test.** - Move the logic into `logic_utils.py`.
-   - Run `pytest` in your terminal.
-   - Keep fixing until all tests pass!
-
-## 📝 Document Your Experience
-
-- [✅] Describe the game's purpose:
-   The game purpose is a guessing number game. You're given a selection of 'Difficultly' and each level is provided with range of numbers and number of attempts. The user has to input a number until it matches with the secret number. The user is provided with hints and able to restart the game.
-  
-- [✅] Detail which bugs you found:
-   1. "New game" button would not restart the game status and history or score won't clear. The game would be on lock till all the attempts are ran out.
-   2. The "check_game" function had an inverted condition. Also, the typeError handler had a error in their condition.
-   3. The "update_score" function has inconsistent scoring outcomes.
-   4. st.sidebar had incorrect range display and wrong logic behind secret regenerating when 'Difficultly' selection changes.
-      
-- [✅] Explain what fixes you applied:
-  1. The fixes I applied for "new game" button is changing the state attempts and adding state status/state history
-  2. For "check_game" function, I change the condition body where it returns the accurate response for if-condition. I also convert secret into a string (similar to guess), fixing the error on string comparison
-  3. I fixed the condition body where it could decrease points based on the number of attempts and could be awarded if given "too high" or "too low"
-  4. I change the mismatch between the displayed range and actual range. I also change the if condition body for secret in session state  
-
-## 📸 Demo
+## 📸 Demo: Before & After
 
 <img width="1324" height="690" alt="Screenshot 2026-03-01 at 7 47 54 PM" src="https://github.com/user-attachments/assets/bb14fe13-ae9a-49ec-9734-f007948cceb5" />
+
+
+
+<img width="1263" height="706" alt="Screenshot 2026-04-10 at 10 43 56 AM" src="https://github.com/user-attachments/assets/85e8159a-dfa3-4f45-aacc-5191a37dea92" />
+
 
 
