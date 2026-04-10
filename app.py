@@ -19,11 +19,12 @@ def parse_guess(raw: str):
     if raw == "":
         return False, None, "Enter a guess."
 
+    cleaned = raw.strip()
+    if "." in cleaned:
+        return False, None, "Decimal numbers are not allowed. Enter a whole number."
+
     try:
-        if "." in raw:
-            value = int(float(raw))
-        else:
-            value = int(raw)
+        value = int(cleaned)
     except Exception:
         return False, None, "That is not a number."
 
